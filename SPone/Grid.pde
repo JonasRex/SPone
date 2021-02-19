@@ -1,6 +1,6 @@
 class Grid {
   Player player;
-  Enemy enemy;
+  Enemies enemies;
   Gui gui;
 
   // My grid is 19 x 19. center is x: 9 y: 9   OBS: Always odd numbers for this game.
@@ -8,31 +8,49 @@ class Grid {
 
   // Player always starts in the center of the grid. I choose to use PVector instead of 2 separate int variables for x and y. 
   PVector playerLocation = new PVector(grid.length/2, grid.length/2);
+  PVector[]enemiesLocation = new PVector[4];
 
-  PVector enemyLocation = new PVector(1, 1);
-  PVector collision = new PVector(0, 0);
-  
   int squareSize = width/grid.length;
-
+  
+  boolean[][]occupiedTile = new boolean[19][19];
+  
 
   Grid() {
     player = new Player(playerLocation, grid);
-    enemy = new Enemy(enemyLocation, grid);
+    enemies = new Enemies(enemiesLocation, grid);
+
     gui = new Gui();
+
+    
+
+    // Initialize Enemies at (0, 0)
+    for (int i = 0; i < enemiesLocation.length; i++) {
+      enemiesLocation[i] = new PVector(0, 0);
+    }
   }
 
 
   void drawGrid() {
-    // Here we initialize the grid with the value zero.
+    // Here we initialize the grid with the value zero. 
     for (int i = 0; i < grid.length; i++) {
       for (int j = 0; j < grid[0].length; j++) {
         grid[i][j]=0;
+        occupiedTile[i][j]= false;
       }
     }
     // Draws the player and enemies on the grid.
     player.updatePlayer();
-    enemy.updateEnemy();
+
+
+    //enemy.updateEnemy();
+
+
+    //placeEnemies();
+    enemies.updateEnemies();
+
     gui.displayGui();
+
+
 
 
     //player.movePlayer();        // Dont put it here cause it will keep looping it in the draw function, and make the player move uncontrollably.
@@ -82,29 +100,42 @@ class Grid {
 
 
 
-  void moveEnemy() {
+  void moveEnemies() {
 
     if (frameCount%20 == 0) {
-      if (playerLocation.x < enemyLocation.x) {
-        enemyLocation.x -=1;
-      } else if (playerLocation.x > enemyLocation.x) {
-        enemyLocation.x +=1;
-      }
+      for (int i = 0; i < 4; i++) {
+        if (playerLocation.x < enemiesLocation[i].x) {
+          enemiesLocation[i].x -=1;
+        } else if (playerLocation.x > enemiesLocation[i].x) {
+          enemiesLocation[i].x +=1;
+        }
 
-      if (playerLocation.y < enemyLocation.y) {
-        enemyLocation.y -=1;
-      } else if (playerLocation.y > enemyLocation.y) {
-        enemyLocation.y +=1;
+        if (playerLocation.y < enemiesLocation[i].y) {
+          enemiesLocation[i].y -=1;
+        } else if (playerLocation.y > enemiesLocation[i].y) {
+          enemiesLocation[i].y +=1;
+        }
       }
     }
   }
+
 
   void detectCollision() {
-    if (playerLocation.x-enemyLocation.y == 0 && playerLocation.y-enemyLocation.y == 0)  {
-      println("hit");
+    for (int i = 0; i < 4; i++) { 
+      if (playerLocation.x-enemiesLocation[i].x == 0 && playerLocation.y-enemiesLocation[i].y == 0) {
+        println("hit");
+      }
     }
   }
 
+
+
+  void placeEnemies() {
+    enemiesLocation[0]= new PVector(2, 2);
+    enemiesLocation[1]= new PVector(2, 16);
+    enemiesLocation[2]= new PVector(16, 2);
+    enemiesLocation[3]= new PVector(16, 16);
+  }
 
   /*
   void getDistance() {
