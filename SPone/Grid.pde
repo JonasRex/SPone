@@ -3,6 +3,7 @@ class Grid {
   Enemies enemies;
   Gui gui;
 
+
   // My grid is 19 x 19. center is x: 9 y: 9   OBS: Always odd numbers for this game.
   int[][]grid = new int[19][19];
 
@@ -11,17 +12,20 @@ class Grid {
   PVector[]enemiesLocation = new PVector[4];
 
   int squareSize = width/grid.length;
-  
+  int startHealth = 100;
+  int currentHealth = startHealth;
+
+
   boolean[][]occupiedTile = new boolean[19][19];
-  
+
 
   Grid() {
     player = new Player(playerLocation, grid);
     enemies = new Enemies(enemiesLocation, grid);
 
-    gui = new Gui();
+    gui = new Gui(startHealth);
 
-    
+
 
     // Initialize Enemies at (0, 0)
     for (int i = 0; i < enemiesLocation.length; i++) {
@@ -88,6 +92,8 @@ class Grid {
     case 3:
       c = color(255, 0, 0); // Red
       break;
+    case 4:
+      c = (#D8A0A0);
     }
 
     return c;
@@ -102,18 +108,18 @@ class Grid {
 
   void moveEnemies() {
 
-    if (frameCount%20 == 0) {
+    if (frameCount%30 == 0) {
       for (int i = 0; i < 4; i++) {
         if (playerLocation.x < enemiesLocation[i].x) {
-          enemiesLocation[i].x -=1;
+          enemiesLocation[i].x -=(int)random(0,2);
         } else if (playerLocation.x > enemiesLocation[i].x) {
-          enemiesLocation[i].x +=1;
+          enemiesLocation[i].x +=(int)random(0,2);
         }
 
         if (playerLocation.y < enemiesLocation[i].y) {
-          enemiesLocation[i].y -=1;
+          enemiesLocation[i].y -=(int)random(0,2);
         } else if (playerLocation.y > enemiesLocation[i].y) {
-          enemiesLocation[i].y +=1;
+          enemiesLocation[i].y +=(int)random(0,2);
         }
       }
     }
@@ -123,7 +129,7 @@ class Grid {
   void detectCollision() {
     for (int i = 0; i < 4; i++) { 
       if (playerLocation.x-enemiesLocation[i].x == 0 && playerLocation.y-enemiesLocation[i].y == 0) {
-        println("hit");
+        //println("hit");
       }
     }
   }
@@ -136,6 +142,22 @@ class Grid {
     enemiesLocation[2]= new PVector(16, 2);
     enemiesLocation[3]= new PVector(16, 16);
   }
+
+
+  void healthReduction() {
+    for (int i = 0; i < 4; i++) {
+      if (currentHealth > 0 && frameCount%1 == 0) {
+        if (playerLocation.x == enemiesLocation[i].x && playerLocation.y == enemiesLocation[i].y)  
+          currentHealth = currentHealth - 1;
+        continue;
+      }
+      continue;
+    }
+    gui.setPlayerHealth(currentHealth);
+    //println(playerLocation);
+    //println(enemiesLocation[1]);
+  }
+
 
   /*
   void getDistance() {

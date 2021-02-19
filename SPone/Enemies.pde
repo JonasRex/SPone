@@ -12,6 +12,8 @@ class Enemies {
     try {
       for (int i = 0; i < 4; i++) {
         grid[(int)enemiesLocation[i].x][(int)enemiesLocation[i].y]=3;
+        
+        
       }
     }
     catch (ArrayIndexOutOfBoundsException e) {

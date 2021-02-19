@@ -1,6 +1,5 @@
 Grid grid;
 
-
 void setup() {
   size(951, 951);
   frame.requestFocus();
@@ -19,7 +18,7 @@ void draw() {
 
   grid.detectCollision();
 
-  //grid.getDistance();
+  grid.healthReduction();
 }
 
 void keyPressed() {
