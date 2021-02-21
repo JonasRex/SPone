@@ -40,10 +40,9 @@ class Player {
     // Made for debugging
     //println(playerLocation);
   }
-  
+
   int getPlayerHealth(int playerHealth) {
     int h = playerHealth;
     return h;
-    
   }
 }

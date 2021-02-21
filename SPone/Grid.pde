@@ -15,21 +15,13 @@ class Grid {
   int squareSize = width/grid.length;
   int startHealth = 100;
   int currentHealth = startHealth;
-
-
-  // Doesnt use it yet. Maybe delete..
-  boolean[][]occupiedTile = new boolean[19][19];
-
+  int endScore;
 
   Grid() {
     player = new Player(playerLocation, grid);
-    enemies = new Enemies(enemiesLocation, grid);
-    food = new Food(foodLocation, grid);
-
-
+    enemies = new Enemies(grid);
+    food = new Food(grid);
     hud = new HUD(startHealth);
-
-
 
     // Initialize Enemies at (0, 0)
     for (int i = 0; i < enemiesLocation.length; i++) {
@@ -38,35 +30,29 @@ class Grid {
     }
   }
 
-
   void drawGrid() {
     // Here we initialize the grid with the value zero. 
     for (int i = 0; i < grid.length; i++) {
       for (int j = 0; j < grid[0].length; j++) {
         grid[i][j]=0;
-        occupiedTile[i][j]= false;
       }
     }
     // Draws the player and enemies on the grid.
     player.updatePlayer();
 
+    enemies.updateEnemies(enemiesLocation);
+    food.updateFood(foodLocation);
+  }
 
-
-
-
-    //placeEnemies();
-    enemies.updateEnemies();
-    food.updateFood();
-
+  void displayGrid() {
+    // Draws the objects initial positions
+    food.displayFood(foodLocation);
+    enemies.displayEnemies(enemiesLocation);
     hud.displayHUD();
-
-
-
-
-    //player.movePlayer();        // Dont put it here cause it will keep looping it in the draw function, and make the player move uncontrollably.
   }
 
   void updateGrid() {
+    // This redraws the grid for every tick with new coord for the gameobjects.
     for (int i = 0; i < grid.length; i++) {
       for (int j = 0; j < grid[0].length; j++) {
         rectMode(CORNER);
@@ -76,9 +62,20 @@ class Grid {
         rect(i*squareSize, j*squareSize, squareSize, squareSize);
       }
     }
-    //player.updatePlayer();
-    //enemy.updateEnemy();
+    // Calls all the update and move methods for the game
+    player.updatePlayer();
+    enemies.updateEnemies(enemiesLocation);
+    food.updateFood(foodLocation);
     hud.updateHUD();
+
+    enemies.moveEnemies(playerLocation, enemiesLocation);
+    food.moveFood(playerLocation, foodLocation);
+
+    detectEnemiesCollision();
+    detectFoodCollision();
+
+    healthReduction();
+    endScore = hud.getScore();
   }
 
 
@@ -99,63 +96,14 @@ class Grid {
       c = color(#6C7274); // Grey Enemies
       break;
     }
-
     return c;
   }
 
   void keyInputPlayer() {
-
     player.movePlayer();
   }
 
-
-
-  void moveEnemies() {
-
-    if (frameCount%20 == 0) {
-      for (int i = 0; i < 4; i++) {
-        if (playerLocation.x < enemiesLocation[i].x) {
-          enemiesLocation[i].x -=(int)random(2);
-        } else if (playerLocation.x > enemiesLocation[i].x) {
-          enemiesLocation[i].x +=(int)random(2);
-        }
-
-        if (playerLocation.y < enemiesLocation[i].y) {
-          enemiesLocation[i].y -=(int)random(2);
-        } else if (playerLocation.y > enemiesLocation[i].y) {
-          enemiesLocation[i].y +=(int)random(2);
-        }
-      }
-    }
-  }
-
-
-  // Need fixing!!
-  void moveFood() {
-
-    if (frameCount%20 == 0) {
-
-
-      for (int i = 0; i < 4; i++) {
-
-
-
-        if (playerLocation.x < foodLocation[i].x && foodLocation[i].x < grid.length-1) {
-          foodLocation[i].x +=(int)random(-2, 2);
-        } else if (playerLocation.x > foodLocation[i].x && foodLocation[i].x >0) {
-          foodLocation[i].x -=(int)random(-2, 2);
-        }
-
-        if (playerLocation.y < foodLocation[i].y && foodLocation[i].y < grid.length-1) {
-          foodLocation[i].y +=(int)random(-2, 2);
-        } else if (playerLocation.y > foodLocation[i].y && foodLocation[i].y >0) {
-          foodLocation[i].y -= (int)random(-2, 2);
-        }
-      }
-    }
-  }
-
-  void detectCollision() {
+  void detectEnemiesCollision() {
     for (int i = 0; i < 4; i++) { 
       if (playerLocation.x-enemiesLocation[i].x == 0 && playerLocation.y-enemiesLocation[i].y == 0) {
         //println("hit");
@@ -169,27 +117,12 @@ class Grid {
         hud.increaseScore(1);
         foodLocation[i].x=(int)random(18);
         foodLocation[i].y=(int)random(18);
-        //scoreBoard();
+        if (currentHealth <= startHealth) {
+          currentHealth = currentHealth + 1;
+        }
       }
     }
   }
-
-
-
-  void placeEnemies() {
-    enemiesLocation[0]= new PVector(2, 2);
-    enemiesLocation[1]= new PVector(2, 16);
-    enemiesLocation[2]= new PVector(16, 2);
-    enemiesLocation[3]= new PVector(16, 16);
-  }
-
-  void placeFood() {
-    foodLocation[0]= new PVector(1, 1);
-    foodLocation[1]= new PVector(17, 1);
-    foodLocation[2]= new PVector(1, 17);
-    foodLocation[3]= new PVector(17, 17);
-  }
-
 
   void healthReduction() {
     for (int i = 0; i < 4; i++) {
@@ -201,8 +134,6 @@ class Grid {
       continue;
     }
     hud.setPlayerHealth(currentHealth);
-    //println(playerLocation);
-    //println(enemiesLocation[1]);
   }
 
   boolean isGameOver() {

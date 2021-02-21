@@ -1,43 +1,35 @@
 Grid grid;
+Menu menu;
 boolean gameOver = false;
+boolean startScreen = true;
 
 void setup() {
   size(951, 951);
   frame.requestFocus();
 
   grid = new Grid();
+  menu = new Menu();
 
-  grid.placeEnemies();
-  grid.placeFood();
+  grid.displayGrid();
 }
 
 void draw() {
-  if (!gameOver) {
+  if (startScreen) {
+    menu.startMessage();
+    if (keyCode == ENTER && startScreen) {
+      keyCode =-1;
+      startScreen = false;
+      gameOver = false;
+      clear();
+      grid.displayGrid();
+      grid.drawGrid();
+    }
+  } else if (!gameOver && !startScreen) {
     grid.drawGrid();
     grid.updateGrid();
-
-
-    grid.moveEnemies();
-    grid.moveFood();
-
-    grid.detectCollision();
-    grid.detectFoodCollision();
-
-    grid.healthReduction();
     isGameOver();
-    
-  } else if(gameOver) {
-    rectMode(CENTER);
-    fill(#D3CF5A);
-    stroke(255);
-    strokeWeight(3);
-    rect(width/2, height/2, width/2, height/2);
-    
-    textAlign(CENTER);
-    fill(0);
-    textSize(50);
-    text("You lost!", width/2, height/2);
-    
+  } else if (gameOver && !startScreen) {
+    menu.gameOverMessage(grid.endScore);
   }
 }
 
@@ -48,5 +40,4 @@ void keyPressed() {
 
 void isGameOver() {
   gameOver = grid.isGameOver();
-  
 }
