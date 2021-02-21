@@ -32,7 +32,7 @@ class Player {
       playerLocation.x +=1;
       printPlayerLocation();
     } else {
-      println("Out of bound Or Wrong key!!!");
+      //println("Out of bound Or Wrong key!!!");
     }
   }
 

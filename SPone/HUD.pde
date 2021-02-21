@@ -1,23 +1,52 @@
-class Gui {
+class HUD {
   int startHealth;
   int healthBarWidth = 200;
   int currentHealth;
+  
+  int score = 0;
 
-  Gui(int startHealth) {
+  HUD(int startHealth) {
     this.startHealth = startHealth;
   }
-  void displayGui() {
+  void displayHUD() {
+    displayHealthBar();
+    displayScore();
+  }
+
+  void updateHUD() {
+    updateHealthBar();
+    displayScore();
+  }
+
+
+  void displayHealthBar() {
     rectMode(CORNER);
     stroke(0);
     strokeWeight(2);
     fill(255);
     rect(24, 24, 201, 51);
     noStroke();
-    fill(#2BFA33);
+    fill(0);
     rect(26, 26, 198, 48);
   }
+  
+  void displayScore() {
+    rectMode(CORNER);
+    stroke(0);
+    strokeWeight(2);
+    fill(255);
+    rect(726, 26, 198, 48);
+    
+    fill(0);
+    textAlign(RIGHT);
+    textSize(30);
+    text(score, 915, 60);
+    
+  }
 
-  void updateGui() {
+
+
+  void updateHealthBar() {
     int w = healthBarWidth/startHealth*currentHealth;
 
     rectMode(CORNER);
@@ -37,7 +66,13 @@ class Gui {
     //println(startHealth);
     //println(currentHealth);
   }
+
+
   void setPlayerHealth(int currentHealth) {
     this.currentHealth = currentHealth;
+  }
+  
+  void increaseScore(int points) {
+    score = score + points;
   }
 }

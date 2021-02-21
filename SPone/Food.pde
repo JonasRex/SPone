@@ -1,17 +1,17 @@
-class Enemies {
-  PVector[] enemiesLocation;
+class Food {
+  PVector[] foodLocation;
   int[][] grid;
-  
-  Enemies(PVector[] enemiesLocation, int[][] grid) {
-    this.enemiesLocation = enemiesLocation;
+
+  Food(PVector[] foodLocation, int[][] grid) {
+    this.foodLocation = foodLocation;
     this.grid = grid;
   }
 
-  void updateEnemies() {
+  void updateFood() {
     // Had some out of bounds issues. Kept the try/catch just in case. My mistake was under movePlayer, where i forgot to set -1 after grid.length.
     try {
       for (int i = 0; i < 4; i++) {
-        grid[(int)enemiesLocation[i].x][(int)enemiesLocation[i].y]=3;
+        grid[(int)foodLocation[i].x][(int)foodLocation[i].y]=2;
       }
     }
     catch (ArrayIndexOutOfBoundsException e) {
